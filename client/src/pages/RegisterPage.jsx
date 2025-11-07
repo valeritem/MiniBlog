@@ -1,27 +1,46 @@
 import React, {useState, useEffect} from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import {registerUser} from '../redux/features/auth/authSlice'
-
+import {registerUser, loginUser} from '../redux/features/auth/authSlice'
+import { toast } from 'react-toastify'
 
 export const RegisterPage = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const {status} = useSelector((state) => state.auth)
 
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  
 
-  const handleSubmit = () =>{
-    try{
-      //dispatch(registerUser({ username, password }))
-      const userData = { username, password }
-      console.log(JSON.stringify(userData, null, 2))
-      setPassword('')
-      setUsername('')
-    } catch (error){
-      console.log(error)
+  useEffect(() =>{
+    if(status){
+      toast(status)
     }
-  }
+  }, [status])
+
+  const handleSubmit = () => {
+        try {
+          
+            const userData = { username, password }
+            console.log('Реєстрація користувача:', JSON.stringify(userData, null, 2))
+
+            localStorage.setItem('token', 'fake-token')
+            localStorage.setItem('username', username)
+
+            dispatch(loginUser({ username, password }))
+
+            toast('Реєстрація успішна! Ви увійшли в систему ')
+            navigate('/')
+
+            setPassword('')
+            setUsername('')
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
   return (
      <form 
       onSubmit={e => e.preventDefault()}
