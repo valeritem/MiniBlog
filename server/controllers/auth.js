@@ -23,6 +23,11 @@ export const register = async (req, res) => {
             password: hash,
         })
 
+         const token = jwt.sign(
+            {
+                id: user._id,
+            })
+
         await newUser.save()
 
         res.json({
@@ -53,9 +58,9 @@ export const register = async (req, res) => {
             })
          }
 
-        //  const token = jwt.sign({
-        //     id: user._id,
-        //  })
+         const token = jwt.sign({
+            id: user._id,
+         })
 
         res.json({
             // token,
