@@ -1,4 +1,4 @@
-import User from '.../models/User.js' 
+import User from '../models/User.js' 
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -10,8 +10,8 @@ export const register = async (req, res) => {
         const isUsed = await User.findOne({username})
 
         if(isUsed) {
-            return res.json({
-                message: 'Даний username вже зайнятий.'
+            return res.status(402).json({
+                message: 'Даний username вже зайнятий. '
             })
         }
 
@@ -23,11 +23,6 @@ export const register = async (req, res) => {
             password: hash,
         })
 
-         const token = jwt.sign(
-            {
-                id: user._id,
-            })
-
         await newUser.save()
 
         res.json({
@@ -38,6 +33,7 @@ export const register = async (req, res) => {
         res.json({message: 'Помилка при створені користувача'})
     }
 }
+
 // Login user 
  export const login = async (req, res) => {
     try {
@@ -58,12 +54,16 @@ export const register = async (req, res) => {
             })
          }
 
-         const token = jwt.sign({
-            id: user._id,
-         })
+         const token = jwt.sign(
+            {
+                 id: user._id,
+            },
+            process.env.JWT_SECRET,
+            {expiresIn: '30d'},
+        )
 
         res.json({
-            // token,
+            token,
             user,
             message: 'Ви увійшли в систему.'
         }
@@ -75,6 +75,30 @@ export const register = async (req, res) => {
 // Get me
 export const getMe = async (req, res) => {
     try {
+        const user = await User.findById(req.userId)
 
-    } catch (error) {}
+         if(!user){
+            return res.json({
+                message: 'Такого корситувача не існує.'
+            })
+         }
+
+          const token = jwt.sign(
+            {
+                 id: user._id,
+            },
+            process.env.JWT_SECRET,
+            {expiresIn: '30d'},
+        )
+
+         res.json({
+            token,
+            user,
+        }
+        )
+
+    } catch (error) {
+         res.json({message: 'Немає доступу.'})
+    }
 }
+
