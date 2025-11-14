@@ -12,13 +12,21 @@ export const AddPostPage = () => {
   const navigate = useNavigate()
 
   const submitHandler = () => {
-  const newPost = { title, text, image: image?.name || '' }
-  console.log('Новий пост:', newPost) 
-  dispatch(createPost(newPost))
-  navigate('/')
+    try {
+        const data = new FormData()
+        data.append('title', title)
+        data.append('text', text)
+        data.append('image', image)
+
+        dispatch(createPost(data))
+        navigate('/')
+ 
+    } catch (error) {
+        console.log(error)
+    }
 }
 
-      const clearFormHandler = () => {
+    const clearFormHandler = () => {
           setText('')
           setTitle('')
       }
