@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import axios from '../../../utils/axios'
 
 const initialState = {
   user: null,
@@ -8,82 +9,60 @@ const initialState = {
 }
 
 export const registerUser = createAsyncThunk(
-  'auth/registerUser',
-  async ({ username, password }, thunkAPI) => {
-    try {
-
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      const data = {
-        message: 'Реєстрація успішна!',
-        user: { username },
-        token: 'fake-token-123',
-      }
-
-      window.localStorage.setItem('token', data.token)
-
-      return data
-    } catch (error) {
-      return thunkAPI.rejectWithValue({ message: 'Помилка реєстрації' })
-    }
-  }
+    'auth/registerUser',
+    async ({ username, password }) => {
+        try {
+            const { data } = await axios.post('/auth/register', {
+                username,
+                password,
+            })
+            if (data.token) {
+                window.localStorage.setItem('token', data.token)
+            }
+            return data
+        } catch (error) {
+            console.log(error)
+        }
+    },
 )
 
 export const loginUser = createAsyncThunk(
-  'auth/loginUser',
-  async ({ username, password }, thunkAPI) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      if (username === 'admin' && password === '12345') {
-        const data = {
-          message: 'Вхід успішний!',
-          user: { username: 'admin' },
-          token: 'fake-token-123',
+    'auth/loginUser',
+    async ({ username, password }) => {
+        try {
+            const { data } = await axios.post('/auth/login', {
+                username,
+                password,
+            })
+            if (data.token) {
+                window.localStorage.setItem('token', data.token)
+            }
+            return data
+        } catch (error) {
+            console.log(error)
         }
-        window.localStorage.setItem('token', data.token)
-        return data
-      } else {
-        return thunkAPI.rejectWithValue({ message: 'Невірний логін або пароль' })
-      }
-    } catch (error) {
-      return thunkAPI.rejectWithValue({ message: 'Помилка входу' })
-    }
-  }
+    },
 )
 
-export const getMe = createAsyncThunk(
-  'auth/getMe',
-  async (_, thunkAPI) => {
+export const getMe = createAsyncThunk('auth/getMe', async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 300))
-      const token = window.localStorage.getItem('token')
-
-      if (!token) {
-        return thunkAPI.rejectWithValue({ message: 'Користувача не знайдено' })
-      }
-
-      return {
-        user: { username: 'admin' },
-        token,
-      }
+        const { data } = await axios.get('/auth/me')
+        return data
     } catch (error) {
-      return thunkAPI.rejectWithValue({ message: 'Помилка при перевірці користувача' })
+        console.log(error)
     }
-  }
-)
+})
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
     logout: (state) => {
-      state.user = null
-      state.token = null
-      state.isLoading = false
-      state.status = 'Вихід виконано'
-      window.localStorage.removeItem('token')
-    },
+            state.user = null
+            state.token = null
+            state.isLoading = false
+            state.status = null
+        }
   },
   extraReducers: (builder) => {
     builder
@@ -100,7 +79,7 @@ export const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false
-        state.status = action.payload?.message || 'Помилка реєстрації'
+        state.status = action.payload.message 
       })
 
       // LOGIN
@@ -116,7 +95,7 @@ export const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false
-        state.status = action.payload?.message || 'Помилка входу'
+        state.status = action.payload.message
       })
 
       // GET ME
@@ -126,12 +105,13 @@ export const authSlice = createSlice({
       })
       .addCase(getMe.fulfilled, (state, action) => {
         state.isLoading = false
-        state.user = action.payload.user
-        state.token = action.payload.token
+        state.status = null
+        state.user = action.payload?.user
+        state.token = action.payload?.token
       })
       .addCase(getMe.rejected, (state, action) => {
         state.isLoading = false
-        state.status = action.payload?.message || 'Користувача не знайдено'
+        state.status = action.payload.message
       })
   },
 })

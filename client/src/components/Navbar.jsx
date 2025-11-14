@@ -65,7 +65,7 @@ export const Navbar = () => {
                 </ul>
             )}
 
-            <div className='flex justify-center items-center bg-gray-600 text-xs text-white rounded-sm px-4 py-2'>
+            <div className='flex justify-center items-center bg-gray-600 text-s text-white rounded-sm px-4 py-2'>
                 {isAuth ? (
                     <button onClick={logoutHandler}>Вийти</button>
                 ) : (
