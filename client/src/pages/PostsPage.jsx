@@ -18,6 +18,14 @@ export const PostsPage = () => {
     fetchMyPosts();
   }, []);
 
+  if(!posts.length){
+    return (
+      <div className='text-xl text-center text-white py-10'>
+        Постів не існує.
+      </div>
+    )
+  }
+
   return (
     <div className="w-1/2 mx-auto py-10 flex flex-col gap-10">
       {posts?.map?.((post, idx) => (
