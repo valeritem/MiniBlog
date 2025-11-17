@@ -1,6 +1,7 @@
 import { title } from 'process';
 import Post from '../models/Post.js';
 import User from '../models/User.js';
+import Comment from '../models/Comment.js';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -127,6 +128,25 @@ export const updatePost = async (req, res) => {
     await post.save();
 
     res.json(post);
+  } catch (error) {
+    res.json({ message: 'Щось пішло не так.' });
+  }
+};
+
+// Get Post Comments
+export const getPostComments = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    
+    if (!post) {
+      return res.status(404).json({ message: 'Пост не знайдено' });
+    }
+    const list = await Promise.all(
+      post.comments.map((comment) => {
+        return Comment.findById(comment);
+      })
+    );
+    res.json(list);
   } catch (error) {
     res.json({ message: 'Щось пішло не так.' });
   }
