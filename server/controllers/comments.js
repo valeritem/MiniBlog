@@ -3,7 +3,9 @@ import Post from '../models/Post.js';
 
 export const createComment = async (req, res) => {
   try {
-    const { postId, comment } = req.body;
+    //const { postId, comment } = req.body;
+    const { comment } = req.body;
+    const postId = req.params.id;
 
     if (!comment) return res.json({ messege: 'Коментар не може бути пустим' });
 
@@ -18,7 +20,7 @@ export const createComment = async (req, res) => {
       console.log(error);
     }
 
-    res.json(newComment);
+    res.status(201).json(newComment);
   } catch (error) {
     res.json({ messege: 'Щось пішло не так.' });
   }

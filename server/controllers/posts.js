@@ -69,8 +69,9 @@ export const getAll = async (req, res) => {
 export const getById = async (req, res) => {
   try {
     const post = await Post.findByIdAndUpdate(req.params.id, {
-      $inc: { views: 1 },
-    });
+      $inc: { views: 1 } },
+      { new: true } 
+    );
     res.json(post);
   } catch (error) {
     res.json({ message: 'Щось пішло не так.' });

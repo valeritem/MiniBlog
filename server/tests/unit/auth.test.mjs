@@ -73,7 +73,7 @@ describe("Auth controller", () => {
 
         await register(req, res)
 
-        expect(res.status).toHaveBeenCalledWith(402)
+        expect(res.status).toHaveBeenCalledWith(409)
         expect(res.json).toHaveBeenCalledWith({
             message: "Даний username вже зайнятий. ",
         })

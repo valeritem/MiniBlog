@@ -1,113 +1,109 @@
-import User from '../models/User.js' 
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 //  Register user
 export const register = async (req, res) => {
-    try {
-        const {username, password} = req.body
+  try {
+    const { username, password } = req.body;
 
-        const isUsed = await User.findOne({username})
+    const isUsed = await User.findOne({ username });
 
-        if(isUsed) {
-            return res.status(402).json({
-                message: 'Даний username вже зайнятий. '
-            })
-        }
-
-        const salt = bcrypt.genSaltSync(10)
-        const hash = bcrypt.hashSync(password,salt)
-
-        const newUser = new User({
-            username,
-            password: hash,
-        })
-
-         const token = jwt.sign(
-            {
-                 id: newUser._id,
-            },
-            process.env.JWT_SECRET,
-            {expiresIn: '30d'},
-        )
-
-        await newUser.save()
-
-        res.json({
-            newUser, 
-            token,
-            message: 'Реєстрація пройшла успішно.'
-        })
-    } catch (error) {
-        res.json({message: 'Помилка при створені користувача'})
+    if (isUsed) {
+      return res.status(409).json({
+        message: 'Даний username вже зайнятий. ',
+      });
     }
-}
 
-// Login user 
- export const login = async (req, res) => {
-    try {
-         const {username, password} = req.body
-         const user = await User.findOne({username})
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
 
-         if(!user){
-            return res.json({
-                message: 'Такого корситувача не існує.'
-            })
-         }
+    const newUser = new User({
+      username,
+      password: hash,
+    });
 
-         const isPasswordCorrect = await bcrypt.compare(password, user.password)
+    await newUser.save();
 
-         if(!isPasswordCorrect){
-            return res.json({
-                message: 'Неправильний пароль.',
-            })
-         }
+    const token = jwt.sign(
+      {
+        id: newUser._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '30d' }
+    );
 
-         const token = jwt.sign(
-            {
-                 id: user._id,
-            },
-            process.env.JWT_SECRET,
-            {expiresIn: '30d'},
-        )
+    res.status(200).json({
+      newUser,
+      token,
+      message: 'Реєстрація пройшла успішно.',
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Помилка при створені користувача' });
+  }
+};
 
-        res.json({
-            token,
-            user,
-            message: 'Ви увійшли в систему.'
-        }
-        )
-    } catch (error) {
-        res.json({message: 'Помилка при авторизації'})
+// Login user
+export const login = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'Такого корситувача не існує.',
+      });
     }
-}
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(400).json({
+        message: 'Неправильний пароль.',
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    res.json({
+      token,
+      user,
+      message: 'Ви увійшли в систему.',
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Помилка при авторизації' });
+  }
+};
 // Get me
 export const getMe = async (req, res) => {
-    try {
-        const user = await User.findById(req.userId)
+  try {
+    const user = await User.findById(req.userId);
 
-         if(!user){
-            return res.json({
-                message: 'Такого корситувача не існує.'
-            })
-         }
-
-          const token = jwt.sign(
-            {
-                 id: user._id,
-            },
-            process.env.JWT_SECRET,
-            {expiresIn: '30d'},
-        )
-
-         res.json({
-            token,
-            user,
-        }
-        )
-
-    } catch (error) {
-         res.json({message: 'Немає доступу.'})
+    if (!user) {
+      return res.json({
+        message: 'Такого корситувача не існує.',
+      });
     }
-}
 
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    res.json({
+      token,
+      user,
+    });
+  } catch (error) {
+    res.json({ message: 'Немає доступу.' });
+  }
+};
