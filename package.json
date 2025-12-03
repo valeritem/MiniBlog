@@ -8,7 +8,8 @@
     "test:e2e:headed": "set NODE_ENV=test && playwright test --headed",
     "test:e2e:report": "playwright show-report playwright-report",
     "test:unit": "set NODE_ENV=test && jest --config server/jest.config.js",
-    "test": "npm run test:unit && npm run test:e2e"
+    "test": "npm run test:unit && npm run test:e2e",
+    "postinstall": "cd client && npm install"
   },
   "keywords": [],
   "author": "",
