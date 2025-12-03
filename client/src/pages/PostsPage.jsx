@@ -1,29 +1,35 @@
-import React, {useState, useEffect} from "react";
-import { PostItem } from '../components/PostItem'
-import axios from '../utils/axios'
+import React, { useState, useEffect, useCallback } from "react";
+import { PostItem } from "../components/PostItem";
+import axios from "../utils/axios";
+import { useLocation } from "react-router-dom";
 
 export const PostsPage = () => {
   const [posts, setPosts] = useState([]);
 
-  const fetchMyPosts = async () => {
+  const location = useLocation();
+  const fetchMyPosts = useCallback(async () => {
     try {
       const { data } = await axios.get("/posts/user/me");
       setPosts(data);
     } catch (error) {
       console.log(error);
     }
-  };
-  
+  }, []);
+
   useEffect(() => {
     fetchMyPosts();
-  }, [fetchMyPosts]);
 
-  if(!posts.length){
+    window.addEventListener("postUpdated", fetchMyPosts);
+
+    return () => window.removeEventListener("postUpdated", fetchMyPosts);
+  }, [location.pathname, fetchMyPosts]);
+
+  if (!posts.length) {
     return (
-      <div className='text-xl text-center text-white py-10'>
+      <div className="text-xl text-center text-white py-10">
         Постів не існує.
       </div>
-    )
+    );
   }
 
   return (

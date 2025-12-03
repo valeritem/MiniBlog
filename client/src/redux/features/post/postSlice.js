@@ -9,9 +9,10 @@ const initialState = {
 
 export const createPost = createAsyncThunk(
   "post/createPost",
-  async (params) => {
+  async (params, {dispatch}) => {
     try {
       const { data } = await axios.post("/posts", params);
+      await dispatch(getAllPosts());
       return data;
     } catch (error) {
       console.log(error);
@@ -73,8 +74,11 @@ export const postSlice = createSlice({
       })
       .addCase(getAllPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = action.payload.posts;
-        state.popularPosts = action.payload.popularPosts;
+
+        const payload = action.payload || {};
+
+        state.posts = payload.posts || [];
+        state.popularPosts = payload.popularPosts || [];
       })
       .addCase(getAllPosts.rejected, (state) => {
         state.loading = false;

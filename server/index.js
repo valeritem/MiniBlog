@@ -1,29 +1,27 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import app from './app.js';
+import mongoose from "mongoose";
+import config from "./config/config.js";
+import app from "./app.js";
 
-dotenv.config();
+let server;
 
-const PORT = process.env.PORT || 3001;
-const DB_USER = process.env.DB_USER;
-const DB_PASSWORD = process.env.DB_PASSWORD;
-const DB_NAME = process.env.DB_NAME;
-
-async function start() {
+export const start = async () => {
   try {
-    await mongoose.connect(
-      `mongodb+srv://${DB_USER}:${DB_PASSWORD}@mern-blog.0vwks4d.mongodb.net/${DB_NAME}?appName=mern-blog`
+    await mongoose.connect(config.mongoUrl);
+    console.log("MongoDB connected:", config.env);
+
+    server = app.listen(config.port, () =>
+      console.log(`Server started on port ${config.port}`)
     );
 
-    app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
-  } catch (error) {
-    console.log(error);
-  }
-}
+    return server;
 
-if (process.env.NODE_ENV !== 'test') {
+  } catch (err) {
+    console.error("Database connection error:", err);
+  }
+};
+
+if (process.env.NODE_ENV !== "test") {
   start();
 }
 
- 
+export default app;

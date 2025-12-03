@@ -11,14 +11,14 @@ export const AddPostPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const submitHandler = () => {
+  const submitHandler = async() => {
     try {
         const data = new FormData()
         data.append('title', title)
         data.append('text', text)
         data.append('image', image)
 
-        dispatch(createPost(data))
+        await dispatch(createPost(data))
         navigate('/')
  
     } catch (error) {
