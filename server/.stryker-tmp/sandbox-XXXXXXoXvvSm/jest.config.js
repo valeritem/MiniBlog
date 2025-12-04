@@ -1,3 +1,4 @@
+// @ts-nocheck
 export default {
   testEnvironment: 'node',
   transform: {},
