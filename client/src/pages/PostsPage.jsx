@@ -1,28 +1,26 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { PostItem } from "../components/PostItem";
 import axios from "../utils/axios";
-import { useLocation } from "react-router-dom";
 
 export const PostsPage = () => {
   const [posts, setPosts] = useState([]);
 
-  const location = useLocation();
-  const fetchMyPosts = useCallback(async () => {
-    try {
-      const { data } = await axios.get("/posts/user/me");
-      setPosts(data);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchMyPosts();
+    const handlePostUpdated = async () => {
+      try {
+        const { data } = await axios.get("/posts/user/me");
+        setPosts(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-    window.addEventListener("postUpdated", fetchMyPosts);
+    handlePostUpdated(); 
 
-    return () => window.removeEventListener("postUpdated", fetchMyPosts);
-  }, [location.pathname, fetchMyPosts]);
+    window.addEventListener("postUpdated", handlePostUpdated);
+
+    return () => window.removeEventListener("postUpdated", handlePostUpdated);
+  }, []);
 
   if (!posts.length) {
     return (

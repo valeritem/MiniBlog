@@ -22,14 +22,14 @@ export const EditPostPage = () => {
     setOldImage(data.imgUrl);
   }, [params.id]);
 
-  const submitHandler = () => {
+  const submitHandler = async () => {
     try {
       const updatedPost = new FormData();
       updatedPost.append("title", title);
       updatedPost.append("text", text);
       updatedPost.append("id", params.id);
       updatedPost.append("image", newImage);
-      dispatch(updatePost(updatedPost));
+      await dispatch(updatePost(updatedPost)).unwrap();
       window.dispatchEvent(new Event("postUpdated"));
       navigate("/posts");
     } catch (error) {

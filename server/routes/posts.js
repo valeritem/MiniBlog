@@ -20,13 +20,13 @@ router.post('/', checkAuth, createPost);
 //http://localhost:3002/api/posts
 router.get('/', getAll);
 
+// Get My Posts
+//http://localhost:3002/api/posts/user/me
+router.get('/user/me', checkAuth, getMyPosts);
+
 // Get Post By Id
 //http://localhost:3002/api/posts/:id
 router.get('/:id', getById);
-
-// Get My Posts
-http://localhost:3002/api/posts/user/me
-router.get('/user/me', checkAuth, getMyPosts);
 
 // Remove Post 
 //http://localhost:3002/api/posts/:id

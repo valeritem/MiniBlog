@@ -126,6 +126,7 @@ export const PostPage = () => {
                   </Link>
                 </button>
                 <button
+                  data-testid="delete-post"
                   onClick={removePostHandler}
                   className="flex items-center justify-center gap-2  text-white opacity-50"
                 >

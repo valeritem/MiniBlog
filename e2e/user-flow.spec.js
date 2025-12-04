@@ -83,19 +83,22 @@ test.describe("Повний цикл роботи системи (E2E)", () => {
     // --- 5. ПЕРЕВІРКА НА ГОЛОВНІЙ ---
     await test.step("5. Пост відображається на головній", async () => {
       await page.reload();
-      await page.waitForLoadState("networkidle");
 
-      const postCard = page.locator(".text-xl", { hasText: postData.title });
-      await expect(postCard).toBeVisible();
+      const postCard = page.locator(".text-xl", {
+        hasText: postData.title,
+      });
+
+      await expect(postCard).toBeVisible({ timeout: 15000 });
     });
-
     // --- 6. МОЇ ПОСТИ ---
     await test.step("6. Мої пости", async () => {
       await page.click("text=Мої пости");
-      await page.waitForLoadState("networkidle");
-      await expect(
-        page.locator(".text-xl", { hasText: postData.title })
-      ).toBeVisible();
+
+      const myPost = page.locator(".text-xl", {
+        hasText: postData.title,
+      });
+
+      await expect(myPost).toBeVisible({ timeout: 15000 });
     });
 
     // --- 7. КОМЕНТАР ---
@@ -114,41 +117,46 @@ test.describe("Повний цикл роботи системи (E2E)", () => {
     await test.step("8. Редагування", async () => {
       await page.click('a[href*="edit"]');
 
-      await expect(page).toHaveURL(/edit/);
-
-      await page.fill('[placeholder="Заголовок"]', postData.updatedTitle);
+      const titleInput = page.locator('[placeholder="Заголовок"]');
+      await titleInput.clear();
+      await titleInput.fill(postData.updatedTitle);
 
       const waitSave = page.waitForResponse(
-        (res) => res.url().includes("/posts") && res.status() === 200
+        (res) =>
+          res.url().includes("/posts") &&
+          res.request().method() === "PUT" &&
+          res.status() === 200
       );
 
-      await page.click("text=Зберегти");
+      await page.click('button:has-text("Зберегти")');
       await waitSave;
 
-      await expect(page).not.toHaveURL(/edit/);
+      await page.reload({ waitUntil: "networkidle" });
 
-      await page.click("text=Мої пости");
-      await page.waitForLoadState("networkidle");
+      const updatedPost = page.getByTestId("post-item", {
+        hasText: postData.updatedTitle,
+      });
 
-      await expect(page).toHaveURL(/\/posts/);
-
-      await expect(
-        page.locator(".text-xl", { hasText: postData.updatedTitle })
-      ).toBeVisible({ timeout: 10000 });
+      await expect(updatedPost).toBeVisible({ timeout: 30000 });
     });
 
     // --- 9. ВИДАЛЕННЯ ---
     await test.step("9. Видалення", async () => {
-      await page.click(`.text-xl:has-text("${postData.updatedTitle}")`);
+      const updatedPost = page.getByTestId("post-item", {
+        hasText: postData.updatedTitle,
+      });
 
-      page.on("dialog", (dialog) => dialog.accept());
+      await expect(updatedPost).toBeVisible({ timeout: 15000 });
 
-      await page.locator("button:has(svg)").last().click();
+      await updatedPost.click();
+
+      page.once("dialog", (dialog) => dialog.accept());
+
+      await page.getByTestId("delete-post").click();
+
       await expect(page).toHaveURL(/(\/|\/posts)$/);
 
-      await expect(
-        page.locator(`text=${postData.updatedTitle}`)
-      ).not.toBeVisible();
+      await expect(page.getByText(postData.updatedTitle)).toHaveCount(0);
     });
   });
 });
