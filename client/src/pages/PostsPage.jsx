@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { PostItem } from '../components/PostItem';
 import axios from '../utils/axios';
 

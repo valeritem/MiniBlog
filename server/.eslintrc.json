@@ -9,10 +9,6 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "ignorePatterns": [
-    "node_modules/",
-    "uploads/",
-    "reports/"
-  ],
+  "ignorePatterns": ["node_modules/", "uploads/", "reports/"],
   "rules": {}
 }
