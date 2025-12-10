@@ -1,0 +1,85 @@
+name: CI & CD
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]     # CI + deploy на main
+
+jobs:
+  ci:
+    name: CI (lint / format / build / test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install root deps
+        run: npm ci
+
+      - name: Install client deps
+        run: |
+          cd client
+          npm ci
+
+      - name: Install server deps
+        run: |
+          cd server
+          npm ci
+
+      - name: Prettier check
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build client
+        run: npm run build:client
+
+      - name: Build server
+        run: npm run build:server
+
+      - name: Run tests (stub)
+        run: npm test
+
+  deploy-to-staging:
+    name: Deploy to staging
+    needs: ci
+    if: github.ref == 'refs/heads/main' && success()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Build (client)
+        run: |
+          cd client
+          npm ci
+          npm run build
+
+      # Deploy via SSH (example using rsync). Наступні secrets мають бути додані в Settings > Secrets:
+      # STAGING_HOST, STAGING_USER, STAGING_PATH, SSH_PRIVATE_KEY
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Sync to staging (rsync)
+        run: |
+          rsync -avz --delete client/build/ ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }}:${{ secrets.STAGING_PATH }}/client/
+          rsync -avz --delete server/ ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }}:${{ secrets.STAGING_PATH }}/server/
+
+      - name: Remote: restart app (example)
+        run: |
+          ssh ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} 'cd ${{ secrets.STAGING_PATH }}/server && npm ci && pm2 restart all || true'

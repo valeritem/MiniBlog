@@ -27,19 +27,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.1"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npx lint-staged",
-      "pre-push": "npm run lint && npm run test && npm run build"
-    }
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,md}": [
-      "prettier --write",
-      "eslint --fix",
-      "git add"
-    ]
-  },
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
@@ -50,7 +37,6 @@
     "babel-jest": "^30.2.0",
     "cross-env": "^10.1.0",
     "eslint-plugin-prettier": "^5.5.4",
-    "husky": "^9.1.7",
     "jest": "^30.2.0",
     "lint-staged": "^16.2.3",
     "mongodb-memory-server": "^10.3.0",
