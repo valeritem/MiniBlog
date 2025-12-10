@@ -1,13 +1,13 @@
-import React, { Children } from 'react'
-import {Navbar} from './Navbar'
+import React, { Children } from 'react';
+import { Navbar } from './Navbar';
 
-export const Layout = ({children}) => {
+export const Layout = ({ children }) => {
   return (
     <React.Fragment>
-      <div className='container mx-auto'>
+      <div className="container mx-auto">
         <Navbar />
         {children}
       </div>
     </React.Fragment>
-  )
-}
+  );
+};

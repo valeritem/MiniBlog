@@ -1,26 +1,26 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   AiFillEye,
   AiOutlineMessage,
   AiTwotoneEdit,
   AiFillDelete,
-} from "react-icons/ai";
-import dayjs from "dayjs";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+} from 'react-icons/ai';
+import dayjs from 'dayjs';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
-import axios from "../utils/axios";
-import { removePost } from "../redux/features/post/postSlice";
+import axios from '../utils/axios';
+import { removePost } from '../redux/features/post/postSlice';
 import {
   createComment,
   getPostComments,
-} from "../redux/features/comment/commentSlice";
-import { CommentItem } from "../components/CommentItem";
+} from '../redux/features/comment/commentSlice';
+import { CommentItem } from '../components/CommentItem';
 
 export const PostPage = () => {
   const [post, setPost] = useState(null);
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState('');
 
   const { user } = useSelector((state) => state.auth);
   const { comments } = useSelector((state) => state.comment);
@@ -32,8 +32,8 @@ export const PostPage = () => {
   const removePostHandler = () => {
     try {
       dispatch(removePost(params.id));
-      toast("Пост видалено");
-      navigate("/posts");
+      toast('Пост видалено');
+      navigate('/posts');
     } catch (error) {
       console.log(error);
     }
@@ -43,7 +43,7 @@ export const PostPage = () => {
     try {
       const postId = params.id;
       dispatch(createComment({ postId, comment }));
-      setComment("");
+      setComment('');
     } catch (error) {
       console.log(error);
     }
@@ -77,7 +77,7 @@ export const PostPage = () => {
   return (
     <div>
       <button className="flex justify-center items-center bg-gray-600 text-xs text-white rounded-sm py-2 px-4">
-        <Link className="flex" to={"/"}>
+        <Link className="flex" to={'/'}>
           Назад
         </Link>
       </button>
@@ -87,7 +87,7 @@ export const PostPage = () => {
           <div className="flex flex-col basis-1/4 flex-grow">
             <div
               className={
-                post?.imgUrl ? "flex rouded-sm h-80" : "flex rounded-sm"
+                post?.imgUrl ? 'flex rouded-sm h-80' : 'flex rounded-sm'
               }
             >
               {post?.imgUrl && (
@@ -102,7 +102,7 @@ export const PostPage = () => {
           <div className="flex justify-between items-center pt-2">
             <div className="text-xs text-white opacity-50">{post.username}</div>
             <div className="text-xs text-white opacity-50">
-              {dayjs(post.createdAt).format("DD.MM.YYYY")}
+              {dayjs(post.createdAt).format('DD.MM.YYYY')}
             </div>
           </div>
           <div className="text-white text-xl">{post.title}</div>

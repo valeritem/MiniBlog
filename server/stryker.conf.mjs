@@ -1,19 +1,14 @@
 export default {
-  testRunner: "jest",
-  coverageAnalysis: "perTest",
-  mutate: [
-    "controllers/**/*.js",
-    "routes/**/*.js",
-    "utils/**/*.js",
-    "models/**/*.js"
-  ],
+  testRunner: 'jest',
+  coverageAnalysis: 'perTest',
+  mutate: ['controllers/**/*.js', 'routes/**/*.js', 'utils/**/*.js', 'models/**/*.js'],
   jest: {
     enableFindRelatedTests: false,
-    projectType: "custom",
+    projectType: 'custom',
     config: {
-      testEnvironment: "node",
+      testEnvironment: 'node',
       transform: {},
-      moduleFileExtensions: ["js", "mjs"],
-    }
-  }
+      moduleFileExtensions: ['js', 'mjs'],
+    },
+  },
 };

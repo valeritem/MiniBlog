@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { checkIsAuth, loginUser } from '../redux/features/auth/authSlice'
-import { toast } from 'react-toastify'
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { checkIsAuth, loginUser } from '../redux/features/auth/authSlice';
+import { toast } from 'react-toastify';
 
 export const LoginPage = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { status, isLoading } = useSelector((state) => state.auth)
-  const isAuth = useSelector(checkIsAuth)
+  const { status, isLoading } = useSelector((state) => state.auth);
+  const isAuth = useSelector(checkIsAuth);
 
   useEffect(() => {
-    if (status) toast(status)
-    if (isAuth) navigate('/') 
-  }, [status, isAuth, navigate])
+    if (status) toast(status);
+    if (isAuth) navigate('/');
+  }, [status, isAuth, navigate]);
 
   const handleSubmit = () => {
     try {
-      dispatch(loginUser({ username, password }))
+      dispatch(loginUser({ username, password }));
 
-      setUsername('')
-      setPassword('')
+      setUsername('');
+      setPassword('');
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   return (
     <form
@@ -77,5 +77,5 @@ export const LoginPage = () => {
         </Link>
       </div>
     </form>
-  )
-}
+  );
+};

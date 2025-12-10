@@ -1,16 +1,15 @@
 // @ts-nocheck
-process.env.JWT_SECRET = 'testsecret'; 
+process.env.JWT_SECRET = 'testsecret';
 
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-import app from '../../app.js'; 
+import app from '../../app.js';
 
 let mongo;
 
 beforeAll(async () => {
-
   mongo = await MongoMemoryServer.create();
   const uri = mongo.getUri();
 
@@ -34,9 +33,9 @@ describe('Full integration test: Auth → Post → Comment', () => {
       username: 'testuser',
       password: '123456',
     });
-    
+
     if (res.statusCode !== 200) {
-        console.error('Register Error:', res.body);
+      console.error('Register Error:', res.body);
     }
 
     expect(res.statusCode).toBe(200);
@@ -51,7 +50,7 @@ describe('Full integration test: Auth → Post → Comment', () => {
     });
 
     if (res.statusCode !== 200) {
-        console.error('Login Error:', res.body); 
+      console.error('Login Error:', res.body);
     }
 
     expect(res.statusCode).toBe(200);
@@ -60,15 +59,12 @@ describe('Full integration test: Auth → Post → Comment', () => {
   });
 
   test('Create post', async () => {
-    const res = await request(app)
-      .post('/api/posts')
-      .set('Authorization', `Bearer ${token}`) 
-      .send({
-        title: 'My first post',
-        text: 'Hello world!',
-        tags: 'test,jest' 
-      });
-      
+    const res = await request(app).post('/api/posts').set('Authorization', `Bearer ${token}`).send({
+      title: 'My first post',
+      text: 'Hello world!',
+      tags: 'test,jest',
+    });
+
     if (res.statusCode !== 200) console.error('Create Post Error:', res.body);
 
     expect(res.statusCode).toBe(200);
@@ -76,7 +72,6 @@ describe('Full integration test: Auth → Post → Comment', () => {
     postId = res.body._id;
   });
 
-  
   test('Get post by ID', async () => {
     const res = await request(app).get(`/api/posts/${postId}`);
     expect(res.statusCode).toBe(200);
@@ -90,7 +85,7 @@ describe('Full integration test: Auth → Post → Comment', () => {
       .send({
         comment: 'Nice post!',
       });
-    expect(res.statusCode).toBe(201); 
+    expect(res.statusCode).toBe(201);
     expect(res.body.comment).toBe('Nice post!');
   });
 

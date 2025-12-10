@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { PostItem } from "../components/PostItem";
-import axios from "../utils/axios";
+import React, { useState, useEffect, useCallback } from 'react';
+import { PostItem } from '../components/PostItem';
+import axios from '../utils/axios';
 
 export const PostsPage = () => {
   const [posts, setPosts] = useState([]);
@@ -8,18 +8,18 @@ export const PostsPage = () => {
   useEffect(() => {
     const handlePostUpdated = async () => {
       try {
-        const { data } = await axios.get("/posts/user/me");
+        const { data } = await axios.get('/posts/user/me');
         setPosts(data);
       } catch (error) {
         console.log(error);
       }
     };
 
-    handlePostUpdated(); 
+    handlePostUpdated();
 
-    window.addEventListener("postUpdated", handlePostUpdated);
+    window.addEventListener('postUpdated', handlePostUpdated);
 
-    return () => window.removeEventListener("postUpdated", handlePostUpdated);
+    return () => window.removeEventListener('postUpdated', handlePostUpdated);
   }, []);
 
   if (!posts.length) {

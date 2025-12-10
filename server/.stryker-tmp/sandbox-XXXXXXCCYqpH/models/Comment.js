@@ -1,8 +1,15 @@
 // @ts-nocheck
 function stryNS_9fa48() {
-  var g = typeof globalThis === 'object' && globalThis && globalThis.Math === Math && globalThis || new Function("return this")();
+  var g =
+    (typeof globalThis === 'object' && globalThis && globalThis.Math === Math && globalThis) ||
+    new Function('return this')();
   var ns = g.__stryker__ || (g.__stryker__ = {});
-  if (ns.activeMutant === undefined && g.process && g.process.env && g.process.env.__STRYKER_ACTIVE_MUTANT__) {
+  if (
+    ns.activeMutant === undefined &&
+    g.process &&
+    g.process.env &&
+    g.process.env.__STRYKER_ACTIVE_MUTANT__
+  ) {
     ns.activeMutant = g.process.env.__STRYKER_ACTIVE_MUTANT__;
   }
   function retrieveNS() {
@@ -14,10 +21,12 @@ function stryNS_9fa48() {
 stryNS_9fa48();
 function stryCov_9fa48() {
   var ns = stryNS_9fa48();
-  var cov = ns.mutantCoverage || (ns.mutantCoverage = {
-    static: {},
-    perTest: {}
-  });
+  var cov =
+    ns.mutantCoverage ||
+    (ns.mutantCoverage = {
+      static: {},
+      perTest: {},
+    });
   function cover() {
     var c = cov.static;
     if (ns.currentTestId) {
@@ -46,15 +55,33 @@ function stryMutAct_9fa48(id) {
   return isActive(id);
 }
 import mongoose from 'mongoose';
-const CommentSchema = new mongoose.Schema(stryMutAct_9fa48("160") ? {} : (stryCov_9fa48("160"), {
-  comment: stryMutAct_9fa48("161") ? {} : (stryCov_9fa48("161"), {
-    type: String
-  }),
-  author: stryMutAct_9fa48("162") ? {} : (stryCov_9fa48("162"), {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: stryMutAct_9fa48("163") ? "" : (stryCov_9fa48("163"), 'User')
-  })
-}), stryMutAct_9fa48("164") ? {} : (stryCov_9fa48("164"), {
-  timestamps: stryMutAct_9fa48("165") ? false : (stryCov_9fa48("165"), true)
-}));
-export default mongoose.model(stryMutAct_9fa48("166") ? "" : (stryCov_9fa48("166"), 'Comment'), CommentSchema);
+const CommentSchema = new mongoose.Schema(
+  stryMutAct_9fa48('160')
+    ? {}
+    : (stryCov_9fa48('160'),
+      {
+        comment: stryMutAct_9fa48('161')
+          ? {}
+          : (stryCov_9fa48('161'),
+            {
+              type: String,
+            }),
+        author: stryMutAct_9fa48('162')
+          ? {}
+          : (stryCov_9fa48('162'),
+            {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: stryMutAct_9fa48('163') ? '' : (stryCov_9fa48('163'), 'User'),
+            }),
+      }),
+  stryMutAct_9fa48('164')
+    ? {}
+    : (stryCov_9fa48('164'),
+      {
+        timestamps: stryMutAct_9fa48('165') ? false : (stryCov_9fa48('165'), true),
+      })
+);
+export default mongoose.model(
+  stryMutAct_9fa48('166') ? '' : (stryCov_9fa48('166'), 'Comment'),
+  CommentSchema
+);

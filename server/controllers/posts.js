@@ -68,9 +68,12 @@ export const getAll = async (req, res) => {
 // Get Post By Id
 export const getById = async (req, res) => {
   try {
-    const post = await Post.findByIdAndUpdate(req.params.id, {
-      $inc: { views: 1 } },
-      { new: true } 
+    const post = await Post.findByIdAndUpdate(
+      req.params.id,
+      {
+        $inc: { views: 1 },
+      },
+      { new: true }
     );
     res.json(post);
   } catch (error) {
@@ -138,7 +141,7 @@ export const updatePost = async (req, res) => {
 export const getPostComments = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    
+
     if (!post) {
       return res.status(404).json({ message: 'Пост не знайдено' });
     }

@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { checkAuth } from '../utils/checkAuth.js';
-import { 
-    createPost, 
-    getAll, 
-    getById, 
-    getMyPosts,
-    removePost,
-    updatePost,
-    getPostComments
+import {
+  createPost,
+  getAll,
+  getById,
+  getMyPosts,
+  removePost,
+  updatePost,
+  getPostComments,
 } from '../controllers/posts.js';
 
 const router = new Router();
@@ -28,11 +28,11 @@ router.get('/user/me', checkAuth, getMyPosts);
 //http://localhost:3002/api/posts/:id
 router.get('/:id', getById);
 
-// Remove Post 
+// Remove Post
 //http://localhost:3002/api/posts/:id
 router.delete('/:id', checkAuth, removePost);
 
-// Update Post 
+// Update Post
 //http://localhost:3002/api/posts/:id
 router.put('/:id', checkAuth, updatePost);
 

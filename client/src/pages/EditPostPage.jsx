@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import axios from "../utils/axios";
-import { updatePost } from "../redux/features/post/postSlice";
+import axios from '../utils/axios';
+import { updatePost } from '../redux/features/post/postSlice';
 
 export const EditPostPage = () => {
-  const [title, setTitle] = useState("");
-  const [text, setText] = useState("");
-  const [oldImage, setOldImage] = useState("");
-  const [newImage, setNewImage] = useState("");
+  const [title, setTitle] = useState('');
+  const [text, setText] = useState('');
+  const [oldImage, setOldImage] = useState('');
+  const [newImage, setNewImage] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -25,20 +25,20 @@ export const EditPostPage = () => {
   const submitHandler = async () => {
     try {
       const updatedPost = new FormData();
-      updatedPost.append("title", title);
-      updatedPost.append("text", text);
-      updatedPost.append("id", params.id);
-      updatedPost.append("image", newImage);
+      updatedPost.append('title', title);
+      updatedPost.append('text', text);
+      updatedPost.append('id', params.id);
+      updatedPost.append('image', newImage);
       await dispatch(updatePost(updatedPost)).unwrap();
-      window.dispatchEvent(new Event("postUpdated"));
-      navigate("/posts");
+      window.dispatchEvent(new Event('postUpdated'));
+      navigate('/posts');
     } catch (error) {
       console.log(error);
     }
   };
   const clearFormHandler = () => {
-    setText("");
-    setTitle("");
+    setText('');
+    setTitle('');
   };
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export const EditPostPage = () => {
           className="hidden"
           onChange={(e) => {
             setNewImage(e.target.files[0]);
-            setOldImage("");
+            setOldImage('');
           }}
         />
       </label>

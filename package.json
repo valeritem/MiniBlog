@@ -19,11 +19,11 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-  "*.{js,jsx,ts,tsx,json,md,css}": [
-    "prettier --write",
-    "eslint --fix"
-  ]
-  },  
+    "*.{js,jsx,ts,tsx,json,md,css}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
