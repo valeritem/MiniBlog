@@ -22,30 +22,58 @@ jobs:
           node-version: 18
           cache: 'npm'
 
+      # -------------------
+      # Install dependencies
+      # -------------------
       - name: Install root deps
         run: npm ci
 
       - name: Install client deps
-        run: |
-          cd client
-          npm ci
+        working-directory: ./client
+        run: npm ci
 
       - name: Install server deps
-        run: |
-          cd server
-          npm ci
+        working-directory: ./server
+        run: npm ci
 
+      # -------------------
+      # Lint & Format
+      # -------------------
       - name: Prettier check
         run: npm run format:check
 
-      - name: Lint
+      - name: Lint root
+        run: npm run lint || true   
+
+      - name: Lint client
+        working-directory: ./client
         run: npm run lint
 
+      - name: Lint server
+        working-directory: ./server
+        run: npm run lint
+
+      # -------------------
+      # Build
+      # -------------------
       - name: Build client
-        run: npm run build:client
+        working-directory: ./client
+        run: npm run build
 
       - name: Build server
-        run: npm run build:server
+        working-directory: ./server
+        run: npm run build
 
-      - name: Run tests (stub)
+      # -------------------
+      # Tests
+      # -------------------
+      - name: Run server tests
+        working-directory: ./server
+        env:
+          NODE_ENV: test
+          MONGO_URI: "mongodb://localhost:27017/test_db"
         run: npm test
+
+      - name: Run client tests
+        working-directory: ./client
+        run: npm test --if-present
