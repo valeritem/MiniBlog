@@ -43,7 +43,7 @@ jobs:
         run: npm run format:check
 
       - name: Lint root
-        run: npm run lint || true   
+        run: npm run lint || true
 
       - name: Lint client
         working-directory: ./client
@@ -71,7 +71,7 @@ jobs:
         working-directory: ./server
         env:
           NODE_ENV: test
-          MONGO_URI: "mongodb://localhost:27017/test_db"
+          MONGO_URI: 'mongodb://localhost:27017/test_db'
         run: npm test
 
       - name: Run client tests
