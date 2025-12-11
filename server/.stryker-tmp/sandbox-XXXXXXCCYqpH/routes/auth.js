@@ -1,8 +1,15 @@
 // @ts-nocheck
 function stryNS_9fa48() {
-  var g = typeof globalThis === 'object' && globalThis && globalThis.Math === Math && globalThis || new Function("return this")();
+  var g =
+    (typeof globalThis === 'object' && globalThis && globalThis.Math === Math && globalThis) ||
+    new Function('return this')();
   var ns = g.__stryker__ || (g.__stryker__ = {});
-  if (ns.activeMutant === undefined && g.process && g.process.env && g.process.env.__STRYKER_ACTIVE_MUTANT__) {
+  if (
+    ns.activeMutant === undefined &&
+    g.process &&
+    g.process.env &&
+    g.process.env.__STRYKER_ACTIVE_MUTANT__
+  ) {
     ns.activeMutant = g.process.env.__STRYKER_ACTIVE_MUTANT__;
   }
   function retrieveNS() {
@@ -14,10 +21,12 @@ function stryNS_9fa48() {
 stryNS_9fa48();
 function stryCov_9fa48() {
   var ns = stryNS_9fa48();
-  var cov = ns.mutantCoverage || (ns.mutantCoverage = {
-    static: {},
-    perTest: {}
-  });
+  var cov =
+    ns.mutantCoverage ||
+    (ns.mutantCoverage = {
+      static: {},
+      perTest: {},
+    });
   function cover() {
     var c = cov.static;
     if (ns.currentTestId) {
@@ -51,11 +60,11 @@ import { checkAuth } from '../utils/checkAuth.js';
 const router = new Router();
 
 // Register
-router.post(stryMutAct_9fa48("196") ? "" : (stryCov_9fa48("196"), '/register'), register);
+router.post(stryMutAct_9fa48('196') ? '' : (stryCov_9fa48('196'), '/register'), register);
 
 // Login
-router.post(stryMutAct_9fa48("197") ? "" : (stryCov_9fa48("197"), '/login'), login);
+router.post(stryMutAct_9fa48('197') ? '' : (stryCov_9fa48('197'), '/login'), login);
 
 // Get me
-router.get(stryMutAct_9fa48("198") ? "" : (stryCov_9fa48("198"), '/me'), checkAuth, getMe);
+router.get(stryMutAct_9fa48('198') ? '' : (stryCov_9fa48('198'), '/me'), checkAuth, getMe);
 export default router;

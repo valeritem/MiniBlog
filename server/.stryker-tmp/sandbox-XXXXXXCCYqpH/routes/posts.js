@@ -1,8 +1,15 @@
 // @ts-nocheck
 function stryNS_9fa48() {
-  var g = typeof globalThis === 'object' && globalThis && globalThis.Math === Math && globalThis || new Function("return this")();
+  var g =
+    (typeof globalThis === 'object' && globalThis && globalThis.Math === Math && globalThis) ||
+    new Function('return this')();
   var ns = g.__stryker__ || (g.__stryker__ = {});
-  if (ns.activeMutant === undefined && g.process && g.process.env && g.process.env.__STRYKER_ACTIVE_MUTANT__) {
+  if (
+    ns.activeMutant === undefined &&
+    g.process &&
+    g.process.env &&
+    g.process.env.__STRYKER_ACTIVE_MUTANT__
+  ) {
     ns.activeMutant = g.process.env.__STRYKER_ACTIVE_MUTANT__;
   }
   function retrieveNS() {
@@ -14,10 +21,12 @@ function stryNS_9fa48() {
 stryNS_9fa48();
 function stryCov_9fa48() {
   var ns = stryNS_9fa48();
-  var cov = ns.mutantCoverage || (ns.mutantCoverage = {
-    static: {},
-    perTest: {}
-  });
+  var cov =
+    ns.mutantCoverage ||
+    (ns.mutantCoverage = {
+      static: {},
+      perTest: {},
+    });
   function cover() {
     var c = cov.static;
     if (ns.currentTestId) {
@@ -47,34 +56,46 @@ function stryMutAct_9fa48(id) {
 }
 import { Router } from 'express';
 import { checkAuth } from '../utils/checkAuth.js';
-import { createPost, getAll, getById, getMyPosts, removePost, updatePost, getPostComments } from '../controllers/posts.js';
+import {
+  createPost,
+  getAll,
+  getById,
+  getMyPosts,
+  removePost,
+  updatePost,
+  getPostComments,
+} from '../controllers/posts.js';
 const router = new Router();
 
 // Create post
 //http://localhost:3002/api/posts
-router.post(stryMutAct_9fa48("200") ? "" : (stryCov_9fa48("200"), '/'), checkAuth, createPost);
+router.post(stryMutAct_9fa48('200') ? '' : (stryCov_9fa48('200'), '/'), checkAuth, createPost);
 
 // Get All Posts
 //http://localhost:3002/api/posts
-router.get(stryMutAct_9fa48("201") ? "" : (stryCov_9fa48("201"), '/'), getAll);
+router.get(stryMutAct_9fa48('201') ? '' : (stryCov_9fa48('201'), '/'), getAll);
 
 // Get My Posts
 //http://localhost:3002/api/posts/user/me
-router.get(stryMutAct_9fa48("202") ? "" : (stryCov_9fa48("202"), '/user/me'), checkAuth, getMyPosts);
+router.get(
+  stryMutAct_9fa48('202') ? '' : (stryCov_9fa48('202'), '/user/me'),
+  checkAuth,
+  getMyPosts
+);
 
 // Get Post By Id
 //http://localhost:3002/api/posts/:id
-router.get(stryMutAct_9fa48("203") ? "" : (stryCov_9fa48("203"), '/:id'), getById);
+router.get(stryMutAct_9fa48('203') ? '' : (stryCov_9fa48('203'), '/:id'), getById);
 
-// Remove Post 
+// Remove Post
 //http://localhost:3002/api/posts/:id
-router.delete(stryMutAct_9fa48("204") ? "" : (stryCov_9fa48("204"), '/:id'), checkAuth, removePost);
+router.delete(stryMutAct_9fa48('204') ? '' : (stryCov_9fa48('204'), '/:id'), checkAuth, removePost);
 
-// Update Post 
+// Update Post
 //http://localhost:3002/api/posts/:id
-router.put(stryMutAct_9fa48("205") ? "" : (stryCov_9fa48("205"), '/:id'), checkAuth, updatePost);
+router.put(stryMutAct_9fa48('205') ? '' : (stryCov_9fa48('205'), '/:id'), checkAuth, updatePost);
 
 // Get Post Comments
 //http://localhost:3002/api/posts/comments/:id
-router.get(stryMutAct_9fa48("206") ? "" : (stryCov_9fa48("206"), '/comments/:id'), getPostComments);
+router.get(stryMutAct_9fa48('206') ? '' : (stryCov_9fa48('206'), '/comments/:id'), getPostComments);
 export default router;

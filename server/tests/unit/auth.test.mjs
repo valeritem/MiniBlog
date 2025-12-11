@@ -1,192 +1,192 @@
-import { jest } from "@jest/globals"
+import { jest } from '@jest/globals';
 
 // Створюємо mockSave перед mockModule
-const mockSave = jest.fn()
+const mockSave = jest.fn();
 
 const userMock = {
-    findOne: jest.fn(),
-    findById: jest.fn()
-}
+  findOne: jest.fn(),
+  findById: jest.fn(),
+};
 
 const bcryptMock = {
-    genSaltSync: jest.fn(),
-    hashSync: jest.fn(),
-    compare: jest.fn(),
-}
+  genSaltSync: jest.fn(),
+  hashSync: jest.fn(),
+  compare: jest.fn(),
+};
 
 const jwtMock = {
-    sign: jest.fn(),
-}
+  sign: jest.fn(),
+};
 
-jest.unstable_mockModule("../../models/User.js", () => ({
-    default: jest.fn().mockImplementation(function(data) {
-        return {
-            ...data,
-            _id: 'id123',
-            save: mockSave
-        }
-    })
-}))
+jest.unstable_mockModule('../../models/User.js', () => ({
+  default: jest.fn().mockImplementation(function (data) {
+    return {
+      ...data,
+      _id: 'id123',
+      save: mockSave,
+    };
+  }),
+}));
 
-jest.unstable_mockModule("bcryptjs", () => ({
-    default: bcryptMock
-}))
+jest.unstable_mockModule('bcryptjs', () => ({
+  default: bcryptMock,
+}));
 
-jest.unstable_mockModule("jsonwebtoken", () => ({
-    default: jwtMock
-}))
+jest.unstable_mockModule('jsonwebtoken', () => ({
+  default: jwtMock,
+}));
 
 // Імпорти
-const { register, login, getMe } = await import("../../controllers/auth.js")
-const User = (await import("../../models/User.js")).default
-const bcrypt = (await import("bcryptjs")).default
-const jwt = (await import("jsonwebtoken")).default
+const { register, login, getMe } = await import('../../controllers/auth.js');
+const User = (await import('../../models/User.js')).default;
+const bcrypt = (await import('bcryptjs')).default;
+const jwt = (await import('jsonwebtoken')).default;
 
 // Додаємо статичні методи до User
-User.findOne = userMock.findOne
-User.findById = userMock.findById
+User.findOne = userMock.findOne;
+User.findById = userMock.findById;
 
 const mockRequest = (body = {}, userId = null) => ({
-    body,
-    userId,
-})
+  body,
+  userId,
+});
 
 const mockResponse = () => {
-    const res = {}
-    res.status = jest.fn().mockReturnValue(res)
-    res.json = jest.fn().mockReturnValue(res)
-    return res
-}
+  const res = {};
+  res.status = jest.fn().mockReturnValue(res);
+  res.json = jest.fn().mockReturnValue(res);
+  return res;
+};
 
-// Tests 
-describe("Auth controller", () => {
-    beforeEach(() => {
-        jest.clearAllMocks()
-    })
+// Tests
+describe('Auth controller', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-    // Register 
-    test("register: повертає помилку, якщо username вже зайнятий", async () => {
-        const req = mockRequest({ username: "test", password: "123" })
-        const res = mockResponse()
+  // Register
+  test('register: повертає помилку, якщо username вже зайнятий', async () => {
+    const req = mockRequest({ username: 'test', password: '123' });
+    const res = mockResponse();
 
-        User.findOne.mockResolvedValue({ username: "test" })
+    User.findOne.mockResolvedValue({ username: 'test' });
 
-        await register(req, res)
+    await register(req, res);
 
-        expect(res.status).toHaveBeenCalledWith(409)
-        expect(res.json).toHaveBeenCalledWith({
-            message: "Даний username вже зайнятий. ",
-        })
-    })
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Даний username вже зайнятий. ',
+    });
+  });
 
-    test('register: успішна реєстрація', async () => {
-        const req = mockRequest({ username: 'alice', password: 'pass' })
-        const res = mockResponse()
+  test('register: успішна реєстрація', async () => {
+    const req = mockRequest({ username: 'alice', password: 'pass' });
+    const res = mockResponse();
 
-        User.findOne.mockResolvedValue(null)
-        
-        bcrypt.genSaltSync.mockReturnValue('salt')
-        bcrypt.hashSync.mockReturnValue('hashedPassword')
+    User.findOne.mockResolvedValue(null);
 
-        const savedUser = { 
-            _id: 'id123', 
-            username: 'alice',
-            password: 'hashedPassword'
-        }
-        
-        mockSave.mockResolvedValue(savedUser)
-        jwt.sign.mockReturnValue('token123')
+    bcrypt.genSaltSync.mockReturnValue('salt');
+    bcrypt.hashSync.mockReturnValue('hashedPassword');
 
-        await register(req, res)
+    const savedUser = {
+      _id: 'id123',
+      username: 'alice',
+      password: 'hashedPassword',
+    };
 
-        expect(mockSave).toHaveBeenCalled()
-        expect(res.json).toHaveBeenCalledWith({
-            newUser: expect.objectContaining({
-                username: 'alice',
-                password: 'hashedPassword'
-            }),
-            token: 'token123',
-            message: 'Реєстрація пройшла успішно.'
-        })
-    })
+    mockSave.mockResolvedValue(savedUser);
+    jwt.sign.mockReturnValue('token123');
 
-    // Login
-    test("login: помилка — юзера не існує", async () => {
-        const req = mockRequest({ username: "unknown", password: "1234" })
-        const res = mockResponse()
+    await register(req, res);
 
-        User.findOne.mockResolvedValue(null)
+    expect(mockSave).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({
+      newUser: expect.objectContaining({
+        username: 'alice',
+        password: 'hashedPassword',
+      }),
+      token: 'token123',
+      message: 'Реєстрація пройшла успішно.',
+    });
+  });
 
-        await login(req, res)
+  // Login
+  test('login: помилка — юзера не існує', async () => {
+    const req = mockRequest({ username: 'unknown', password: '1234' });
+    const res = mockResponse();
 
-        expect(res.json).toHaveBeenCalledWith({
-            message: "Такого корситувача не існує.",
-        })
-    })
+    User.findOne.mockResolvedValue(null);
 
-    test("login: неправильний пароль", async () => {
-        const req = mockRequest({ username: "user", password: "wrong" })
-        const res = mockResponse()
+    await login(req, res);
 
-        const user = { username: "user", password: "hashed" }
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Такого корситувача не існує.',
+    });
+  });
 
-        User.findOne.mockResolvedValue(user)
-        bcrypt.compare.mockResolvedValue(false)
+  test('login: неправильний пароль', async () => {
+    const req = mockRequest({ username: 'user', password: 'wrong' });
+    const res = mockResponse();
 
-        await login(req, res)
+    const user = { username: 'user', password: 'hashed' };
 
-        expect(res.json).toHaveBeenCalledWith({
-            message: "Неправильний пароль.",
-        })
-    })
+    User.findOne.mockResolvedValue(user);
+    bcrypt.compare.mockResolvedValue(false);
 
-    test("login: успішний вхід", async () => {
-        const req = mockRequest({ username: "user", password: "1234" })
-        const res = mockResponse()
+    await login(req, res);
 
-        const user = { _id: "userId", username: "user", password: "hashed" }
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Неправильний пароль.',
+    });
+  });
 
-        User.findOne.mockResolvedValue(user)
-        bcrypt.compare.mockResolvedValue(true)
-        jwt.sign.mockReturnValue("login_token")
+  test('login: успішний вхід', async () => {
+    const req = mockRequest({ username: 'user', password: '1234' });
+    const res = mockResponse();
 
-        await login(req, res)
+    const user = { _id: 'userId', username: 'user', password: 'hashed' };
 
-        expect(res.json).toHaveBeenCalledWith({
-            token: "login_token",
-            user,
-            message: "Ви увійшли в систему.",
-        })
-    })
+    User.findOne.mockResolvedValue(user);
+    bcrypt.compare.mockResolvedValue(true);
+    jwt.sign.mockReturnValue('login_token');
 
-    // get Me
-    test("getMe: юзера не існує", async () => {
-        const req = mockRequest({}, "123")
-        const res = mockResponse()
+    await login(req, res);
 
-        User.findById.mockResolvedValue(null)
+    expect(res.json).toHaveBeenCalledWith({
+      token: 'login_token',
+      user,
+      message: 'Ви увійшли в систему.',
+    });
+  });
 
-        await getMe(req, res)
+  // get Me
+  test('getMe: юзера не існує', async () => {
+    const req = mockRequest({}, '123');
+    const res = mockResponse();
 
-        expect(res.json).toHaveBeenCalledWith({
-            message: "Такого корситувача не існує.",
-        })
-    })
+    User.findById.mockResolvedValue(null);
 
-    test("getMe: успішно повертає дані", async () => {
-        const req = mockRequest({}, "123")
-        const res = mockResponse()
+    await getMe(req, res);
 
-        const user = { _id: "123", username: "vlad" }
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Такого корситувача не існує.',
+    });
+  });
 
-        User.findById.mockResolvedValue(user)
-        jwt.sign.mockReturnValue("tokenXYZ")
+  test('getMe: успішно повертає дані', async () => {
+    const req = mockRequest({}, '123');
+    const res = mockResponse();
 
-        await getMe(req, res)
+    const user = { _id: '123', username: 'vlad' };
 
-        expect(res.json).toHaveBeenCalledWith({
-            token: "tokenXYZ",
-            user,
-        })
-    })
-})
+    User.findById.mockResolvedValue(user);
+    jwt.sign.mockReturnValue('tokenXYZ');
+
+    await getMe(req, res);
+
+    expect(res.json).toHaveBeenCalledWith({
+      token: 'tokenXYZ',
+      user,
+    });
+  });
+});

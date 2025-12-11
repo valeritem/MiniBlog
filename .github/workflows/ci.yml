@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  pull_request:
+    branches: ['main']
+  push:
+    branches: ['main']
+
+jobs:
+  ci:
+    name: CI (lint / format / build / test)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit messages
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: commitlint.config.cjs
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      # -------------------
+      # Install dependencies
+      # -------------------
+      - name: Install root deps
+        run: npm ci
+
+      - name: Install client deps
+        working-directory: ./client
+        run: npm ci
+
+      - name: Install server deps
+        working-directory: ./server
+        run: npm ci
+
+      # -------------------
+      # Lint & Format
+      # -------------------
+      - name: Prettier check
+        run: npm run format:check
+
+      - name: Lint root
+        run: npm run lint || true
+
+      - name: Lint client
+        working-directory: ./client
+        run: npm run lint
+
+      - name: Lint server
+        working-directory: ./server
+        run: npm run lint
+
+      # -------------------
+      # Build
+      # -------------------
+      - name: Build client
+        working-directory: ./client
+        run: npm run build
+
+      - name: Build server
+        working-directory: ./server
+        run: npm run build
+
+      # -------------------
+      # Tests
+      # -------------------
+      - name: Run server tests
+        working-directory: ./server
+        env:
+          NODE_ENV: test
+          MONGO_URI: 'mongodb://localhost:27017/test_db'
+        run: npm test
+
+      - name: Run client tests
+        working-directory: ./client
+        run: npm test -- --passWithNoTests
