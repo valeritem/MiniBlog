@@ -1,114 +1,87 @@
-import Post from '../models/Post.js';
-import User from '../models/User.js';
-import Comment from '../models/Comment.js';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { PostService } from 'blog-core';
+import { MongoosePostRepository } from '../repositories/MongoosePostRepository.js';
+import { LocalFileStorage } from '../services/LocalFileStorage.js';
+
+const postRepository = new MongoosePostRepository();
+const fileStorage = new LocalFileStorage();
+
+const postService = new PostService(postRepository, fileStorage);
 
 // Create Post
 export const createPost = async (req, res) => {
   try {
     const { title, text } = req.body;
-    const user = await User.findById(req.userId);
 
-    if (req.files) {
-      let fileName = Date.now().toString() + req.files.image.name;
-      const __dirname = dirname(fileURLToPath(import.meta.url));
-      req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName));
-
-      const newPostWithImage = new Post({
-        username: user.username,
-        title,
-        text,
-        imgUrl: fileName,
-        author: req.userId,
-      });
-
-      await newPostWithImage.save();
-      await User.findByIdAndUpdate(req.userId, {
-        $push: { posts: newPostWithImage },
-      });
-
-      return res.json(newPostWithImage);
-    }
-
-    const newPostWithoutImage = new Post({
-      username: user.username,
+    const createPostDTO = {
       title,
       text,
-      imgUrl: '',
-      author: req.userId,
-    });
-    await newPostWithoutImage.save();
-    await User.findByIdAndUpdate(req.userId, {
-      $push: { posts: newPostWithoutImage },
-    });
-    res.json(newPostWithoutImage);
+      authorId: req.userId,
+      username: req.body.username,
+    };
+
+    if (req.files && req.files.image) {
+      createPostDTO.image = {
+        name: req.files.image.name,
+        data: req.files.image.data,
+      };
+    }
+
+    const newPost = await postService.createPost(createPostDTO);
+
+    res.status(200).json(newPost);
   } catch (error) {
-    res.json({ message: 'Щось пішло не так.' });
+    console.error(error);
+    res.status(500).json({ message: 'Щось пішло не так при створенні поста.' });
   }
 };
 
 // Get All Posts
 export const getAll = async (req, res) => {
   try {
-    const posts = await Post.find().sort('-createdAt');
-    const popularPosts = await Post.find().limit(5).sort('-views');
-
-    if (!posts) {
-      return res.json({ message: 'Постів немає.' });
-    }
-
-    res.json({ posts, popularPosts });
+    const result = await postService.getAllPosts();
+    res.json(result);
   } catch (error) {
-    res.json({ message: 'Щось пішло не так.' });
+    console.error(error);
+    res.status(500).json({ message: 'Щось пішло не так.' });
   }
 };
 
 // Get Post By Id
 export const getById = async (req, res) => {
   try {
-    const post = await Post.findByIdAndUpdate(
-      req.params.id,
-      {
-        $inc: { views: 1 },
-      },
-      { new: true }
-    );
+    const post = await postService.getPostById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ message: 'Пост не знайдено.' });
+    }
     res.json(post);
   } catch (error) {
-    res.json({ message: 'Щось пішло не так.' });
+    res.status(500).json({ message: 'Щось пішло не так.' });
   }
 };
 
 // Get My Posts
 export const getMyPosts = async (req, res) => {
   try {
-    const user = await User.findById(req.userId);
-    const list = await Promise.all(
-      user.posts.map((post) => {
-        return Post.findById(post._id);
-      })
-    );
-
-    res.json(list);
+    const posts = await postService.getMyPosts(req.userId);
+    res.json(posts);
   } catch (error) {
-    res.json({ message: 'Щось пішло не так.' });
+    console.error(error);
+    res.status(500).json({ message: 'Щось пішло не так.' });
   }
 };
 
 // Remove Post
 export const removePost = async (req, res) => {
   try {
-    const post = await Post.findByIdAndDelete(req.params.id);
-    if (!post) return res.json({ message: 'Такого поста не існує.' });
+    const success = await postService.removePost(req.params.id);
 
-    await User.findByIdAndUpdate(req.userId, {
-      $pull: { posts: req.params.id },
-    });
+    if (!success) {
+      return res.status(404).json({ message: 'Такого поста не існує.' });
+    }
 
     res.json({ message: 'Пост видалено.' });
   } catch (error) {
-    res.json({ message: 'Щось пішло не так.' });
+    res.status(500).json({ message: 'Щось пішло не так.' });
   }
 };
 
@@ -116,34 +89,39 @@ export const removePost = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const { title, text, id } = req.body;
-    const post = await Post.findById(id);
 
-    if (req.files) {
-      let fileName = Date.now().toString() + req.files.image.name;
-      const __dirname = dirname(fileURLToPath(import.meta.url));
-      req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName));
-      post.imgUrl = fileName || ' ';
+    const updateDTO = { title, text };
+
+    if (req.files && req.files.image) {
+      updateDTO.image = {
+        name: req.files.image.name,
+        data: req.files.image.data,
+      };
     }
 
-    post.title = title;
-    post.text = text;
+    const updatedPost = await postService.updatePost(id, updateDTO);
 
-    await post.save();
+    if (!updatedPost) {
+      return res.status(404).json({ message: 'Пост не знайдено.' });
+    }
 
-    res.json(post);
+    res.json(updatedPost);
   } catch (error) {
-    res.json({ message: 'Щось пішло не так.' });
+    res.status(500).json({ message: 'Щось пішло не так.' });
   }
 };
 
 // Get Post Comments
+import Post from '../models/Post.js';
+import Comment from '../models/Comment.js';
+
 export const getPostComments = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-
     if (!post) {
       return res.status(404).json({ message: 'Пост не знайдено' });
     }
+
     const list = await Promise.all(
       post.comments.map((comment) => {
         return Comment.findById(comment);
