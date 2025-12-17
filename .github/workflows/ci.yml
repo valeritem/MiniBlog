@@ -28,6 +28,16 @@ jobs:
           cache: 'npm'
 
       # -------------------
+      # Build Library (CRITICAL STEP)
+      # -------------------
+      # Спочатку збираємо бібліотеку, щоб сервер міг її знайти
+      - name: Install and Build Blog Core
+        working-directory: ./libs/blog-core
+        run: |
+          npm ci
+          npm run build
+
+      # -------------------
       # Install dependencies
       # -------------------
       - name: Install root deps
